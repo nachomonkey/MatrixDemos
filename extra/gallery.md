@@ -3,32 +3,33 @@
 These animations demonstrate the functionality of the MatrixDemos.
 
 
-<img src="matrix_digitalclock.gif" alt="Matrix Digital Clock" style="zoom:25%;" /> `matrix_digitalclock`
+
+![Matrix Digital Clock](matrix_digitalclock.gif) `matrix_digitalclock`
 
 ------
 
-<img src="matrix_analogclock.gif" alt="Matrix Analog Clock" style="zoom:25%"/> `matrix_analogclock`
+![Matrix Analog Clock](matrix_analogclock.gif) `matrix_analogclock`
 
 ------
 
-<img src="matrix_slideshow.gif" alt="Matrix Slideshow" style="zoom:25%;" /> `matrix_slideshow`
+![Matrix Slideshow](matrix_slideshow.gif) `matrix_slideshow`
 
 ------
 
-<img src="matrix_snakegame.gif" alt="Matrix Snake Game" style="zoom:25%"/> `matrix_snakegame`
+![Matrix Snakegame](matrix_snakegame.gif) `matrix_snakegame`
 
 ------
 
-<img src="matrix_stars.gif" alt="Matrix Stars" style="zoom:25%"/> `matrix_stars`
+![Matrix Stars](matrix_stars.gif) `matrix_stars`
 
 ------
 
-<img src="matrix_textswarm.gif" alt="Matrix Text Swarm" style="zoom:25%"/> `matrix_textswarm`
+![Matrix Text Swarm](matrix_textswarm.gif) `matrix_textswarm`
 
 ------
 
-<img src="matrix_animations.gif" alt="Matrix Animations" style="zoom:25%"/> `matrix_animations`
+![Matrix Animations](matrix_animations.gif) `matrix_animations ring`
 
 ------
 
-<img src="matrix_scrolling.gif" alt="Matrix Scrolling" style="zoom:25%"/> `matrix_scrolling`
+![Matrix Scrolling](matrix_scrolling.gif) `matrix_scrolling -r "YOU CAN PUT TEXT HERE"`
