@@ -1,0 +1,9 @@
+build/
+dist/
+MatrixDemos.egg-info/
+matrixdemos/__pycache__/
+include/
+bin/
+lib/
+pyvenv.cfg
+share/
