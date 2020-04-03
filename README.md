@@ -55,4 +55,4 @@ Example of setting the color of the analog clock:
 
 # License
 
-This software is under the MIT License. See the LICENSE file for more details.
+This software is under the MIT License. See the [LICENSE](https://github.com/nachomonkey/MatrixDemos/blob/master/LICENSE) file for more details.
