@@ -1,10 +1,15 @@
-from matrixdemo import __version__, __author__
+try:
+    from matrixdemos import __version__, __author__
+except ImportError:
+    header = ""
+else:
+    header = f"--- MatrixDemos V{__version__} by {__author__} ---\n"
 
 e = '\033[0m'
 b = '\033[1m'
 
 def main():
-    print(f"MatrixDemos V{__version__} by {__author__}")
+    print(header, end="")
     print("A collection of demos for the Adafruit 32x32 matrix.\n")
     print("This package contains:\n")
     print("---")
