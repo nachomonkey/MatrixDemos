@@ -3,7 +3,7 @@ import shutil
 
 __title__ = "MatrixDemo"
 __author__ = "NachoMonkey"
-__version__ = "0.1"
+__version__ = "0.1.2"
 
 # Put special data in your home directory
 DATA_PATH = "/home/" + os.getlogin() + "/.matrixdemos_data"
