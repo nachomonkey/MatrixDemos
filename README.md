@@ -46,6 +46,8 @@ Execute any of the following console commands.
 * `matrix_animations [[PATH]/[DEMO]]` Shows an animation from images in a directory. Use `-f` to adjust framerate, and `-l` and `-n` to control looping. Use `-g` to specify an animated gif or video
 * `matrix_scrolling [[TEXT]/[PATH]]` Scrolls text or an image from left to right. Use `-c` and `-f` to adjust text color and font, `-s` for speed, `-r` to repeat, and `-b` to bounce.
 
+Visit the [Gallery](extra/gallery.md) to see a visualization of each demo.
+
 ### Setting Colors:
 
 When setting the color on (ie. `-c` in `matrix_textswarm`) you can specify either the color's name (RED) or its hex code ("#ff000").
