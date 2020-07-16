@@ -4,7 +4,12 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 from matrixdemos.scripts.get_file import get_file
 
 def apply_alpha(image, background):
-    if len(image.getpixel((0, 0))) != 4:
+    try:
+        if isinstance(image.getpixel((0, 0)), int):
+            return image
+        if len(image.getpixel((0, 0))) != 4:
+            return image
+    except:
         return image
     else:
         new_image = image.convert("RGB")

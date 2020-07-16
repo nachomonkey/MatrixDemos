@@ -7,3 +7,4 @@ bin/
 lib/
 pyvenv.cfg
 share/
+PACKAGE_AND_UPLOAD.sh
