@@ -77,9 +77,11 @@ def run():
     # Load and process images
     loaded_images = []
     for img in images:
+        if os.path.isdir(PATH + img):
+            continue
         try:
             image1 = Image.open(PATH + img)
-        except (IsADirectoryError, OSError):
+        except (OSError):
             print(f"Couldn't load \"{img}\"")
             continue
         # If image is too small, center it on a black image
