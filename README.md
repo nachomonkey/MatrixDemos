@@ -7,11 +7,11 @@
 * Python >= 3.6
 
 * Pillow
-* pygame (joystick support)
+* pygame (for joystick support)
 
 ### Hardware Dependencies
 
-* Raspberry Pi 2, 3, or 4; running Raspbian Buster or greater
+* Raspberry Pi 2, 3, or 4
 * [Adafruit RGB Matrix HAT](https://www.adafruit.com/product/2345)
 * [Adafruit 32x32 RGB LED Matrix](https://www.adafruit.com/product/1484)
 * [5V 4A power supply](https://www.adafruit.com/product/1466)
@@ -57,4 +57,4 @@ Example of setting the color of the analog clock:
 
 # License
 
-This software is under the MIT License. See the [LICENSE](https://github.com/nachomonkey/MatrixDemos/blob/master/LICENSE) file for more details.
+This software is licensed under the MIT License. See the [LICENSE](https://github.com/nachomonkey/MatrixDemos/blob/master/LICENSE) file for more details.
