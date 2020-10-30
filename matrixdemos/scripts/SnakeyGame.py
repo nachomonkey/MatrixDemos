@@ -60,8 +60,8 @@ try:
     if ("x" in name and "box" in name):
         OK_CODE = 0
 except:
-    sys.stderr.write("ERR: This program requires a joystick.\n")
-    sys.stderr.write("X-BOX and GameCube remotes are compatible\n")
+    sys.stderr.write("ERR: This program requires a USB joystick.\n")
+    sys.stderr.write("X-BOX and Nintendo GameCube controllers are compatible\n")
     sys.exit(1)
 
 def spawn_food():
