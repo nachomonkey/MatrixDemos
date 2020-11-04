@@ -30,11 +30,13 @@ if options.clear:
 import random
 import time
 import copy
-import pygame
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
+import colorsys                                         # Convert hsl to rgb
+import pygame                                           # Joystick support
 from subprocess import Popen
+from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from PIL import Image, ImageEnhance
 
-from math import sqrt
+from math import sqrt, sin
 from matrixdemos.scripts.utils import *
 from matrixdemos.scripts.get_file import get_file
 
@@ -76,6 +78,8 @@ options.drop_privileges = False
 
 matrix = RGBMatrix(options = options)
 
+JOYSTICK_SENSITIVITY = 0.6
+
 def get_high_score():
     if not os.path.exists(HI_SCORE_FILE):
         with open(HI_SCORE_FILE, "wb") as file:
@@ -91,18 +95,36 @@ def check_high_score(score):
         return True
     return False
 
+# Change RGB from 0-1 to 0-255
+def make_rgb(rgb):
+    r, g, b = rgb
+    r = int(r * 255)
+    g = int(g * 255)
+    b = int(b * 255)
+    return (r, g, b)
+
 def run():
-    HEAD = [16, 16]
-    TAIL = [16, 17]
-    SNAKE = [copy.copy(HEAD), copy.copy(TAIL)]
-    DIRECTION = "RIGHT"
+    print("--Snakey--")
+    print("Press A to Start")
+
+    head = [16, 16]
+    tail = [16, 17]
+    snake = [copy.copy(head), copy.copy(tail)]
+    direction = "RIGHT"
     state = "MENU"
-    FOOD = spawn_food()
+    food = spawn_food()
     score = 0
-    def add_new_segment(SNAKE, OLDPOS):
-        SNAKE.append(OLDPOS)
+    def add_new_segment(snake, oldpos):
+        snake.append(oldpos)
 
     hi_score = str(get_high_score())
+
+    start_image = Image.open(get_file("images/SnakeyStart.png"))
+    start_image2 = Image.open(get_file("images/SnakeyStart2.png"))
+    start_image3 = Image.open(get_file("images/SnakeyStart3.png"))
+    start_image4 = Image.open(get_file("images/SnakeyStart4.png"))
+    gameover_image = Image.open(get_file("images/SnakeyGameOver.png"))
+
     while True:
         image, canvas = new_canvas()
         if state == "MENU":
@@ -115,24 +137,34 @@ def run():
                 if event.type == pygame.JOYBUTTONDOWN:
                     if event.button == OK_CODE:
                         state = "GAME"
-            DrawText(canvas, (2, 0), 10, "Start?", font="cambriab", color=(255, 100, 0))
-            DrawText(canvas, (0, 12), 8, f"Hi Score:", font="cambriab", color=(255, 255, 0))
-            DrawText(canvas, (13, 18), 8, hi_score, color=(0, 255, 0))
-            matrix.SetImage(image)
+            enhancer = ImageEnhance.Brightness((start_image, start_image2, start_image3, start_image4)[int((time.time()) * 10) % 4])
+            start_img = enhancer.enhance(abs(sin(time.time() * 1.5 )) * 0.5 + 0.75)
+            canvas = ImageDraw.Draw(start_img)
+            DrawText(canvas, (16, 23), 8, hi_score, make_rgb(colorsys.hsv_to_rgb(time.time() % 360, 1, 1)), center=True)
+            matrix.SetImage(start_img)
         if state == "GAME":
             joyPos = [0, 0]
+            old_direction = direction
+
+# This variable is used to prevent multiple direction changes
+# occuring in one frame, which can cause U-Turn
+            changed_direction = False
+
             for event in pygame.event.get():
+                if old_direction != direction:
+                    changed_direction = True
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         exit()
-                    if event.key == pygame.K_LEFT and DIRECTION != "RIGHT":
-                        DIRECTION = "LEFT"
-                    elif event.key == pygame.K_RIGHT and DIRECTION != "LEFT":
-                        DIRECTION = "RIGHT"
-                    elif event.key == pygame.K_UP and DIRECTION != "DOWN":
-                        DIRECTION = "UP"
-                    elif event.key == pygame.K_DOWN and DIRECTION != "UP":
-                        DIRECTION = "DOWN"
+                    if not changed_direction:
+                        if event.key == pygame.K_LEFT and direction != "RIGHT":
+                            direction = "LEFT"
+                        elif event.key == pygame.K_RIGHT and direction != "LEFT":
+                            direction = "RIGHT"
+                        elif event.key == pygame.K_UP and direction != "DOWN":
+                            direction = "UP"
+                        elif event.key == pygame.K_DOWN and direction != "UP":
+                            direction = "DOWN"
                 if event.type == pygame.JOYAXISMOTION:
                     if event.axis == 0:
                         joyPos[0] = event.value
@@ -141,60 +173,77 @@ def run():
                 if event.type == pygame.JOYBUTTONDOWN:
                     if event.button == 7:
                         exit()
-            if joyPos[0] > .7 and DIRECTION != "LEFT":
-                DIRECTION = "RIGHT"
-            elif joyPos[1] > .7 and DIRECTION != "UP":
-                DIRECTION = "DOWN"
-            elif joyPos[0] < -.7 and DIRECTION != "RIGHT":
-                DIRECTION = "LEFT"
-            elif joyPos[1] < -.7 and DIRECTION != "DOWN":
-                DIRECTION = "UP"
-            for p in SNAKE:
-                if p == HEAD and SNAKE.index(p) != 0:
+                if event.type == pygame.JOYHATMOTION:
+                    if not changed_direction:
+                        if event.value == (-1, 0) and direction != "RIGHT":
+                            direction = "LEFT"
+                        elif event.value == (1, 0) and direction != "LEFT":
+                            direction = "RIGHT"
+                        elif event.value == (0, 1) and direction != "DOWN":
+                            direction = "UP"
+                        elif event.value == (0, -1) and direction != "UP":
+                            direction = "DOWN"
+            if not changed_direction:
+                if joyPos[0] > JOYSTICK_SENSITIVITY and direction != "LEFT":
+                    direction = "RIGHT"
+                elif joyPos[1] > JOYSTICK_SENSITIVITY and direction != "UP":
+                    direction = "DOWN"
+                elif joyPos[0] < -JOYSTICK_SENSITIVITY and direction != "RIGHT":
+                    direction = "LEFT"
+                elif joyPos[1] < -JOYSTICK_SENSITIVITY and direction != "DOWN":
+                    direction = "UP"
+            for index, point in enumerate(snake):
+                if point == head and index:
                     state = "LOST"
                     continue
-                canvas.point(p, "GREEN")
-            canvas.point(FOOD, "RED")
-            if DIRECTION == "UP":
-                HEAD[1] -= 1
-            if DIRECTION == "DOWN":
-                HEAD[1] += 1
-            if DIRECTION == "LEFT":
-                HEAD[0] -= 1
-            if DIRECTION == "RIGHT":
-                HEAD[0] += 1
-            old = copy.copy(HEAD)
-            for s in SNAKE:
-                SNAKE[SNAKE.index(s)] = old
+                canvas.point(point, "GREEN")
+            canvas.point(food, "RED")
+            if direction == "UP":
+                head[1] -= 1
+            if direction == "DOWN":
+                head[1] += 1
+            if direction == "LEFT":
+                head[0] -= 1
+            if direction == "RIGHT":
+                head[0] += 1
+            old = copy.copy(head)
+            for s in snake:
+                snake[snake.index(s)] = old
                 old = s
-            OLDPOS = SNAKE[-1]
-            if HEAD == FOOD:
+            oldpos = snake[-1]
+            if head == food:
                 score += 1
-                FOOD = spawn_food()
-                add_new_segment(SNAKE, OLDPOS)
-            if HEAD[0] < 0 or HEAD[0] >= 32 or HEAD[1] < 0 or HEAD[1] >= 32:
+                food = spawn_food()
+                add_new_segment(snake, oldpos)
+            if head[0] < 0 or head[0] >= 32 or head[1] < 0 or head[1] >= 32:
                 state = "LOST"
             matrix.SetImage(image)
-            time.sleep(0.1 / (len(SNAKE) / 2.75))
+            time.sleep(0.1 / (len(snake) / 2.75))
         if state == "LOST":
-            image, canvas = new_canvas()
+            pygame.event.set_blocked(True)
+            image = gameover_image.copy()
+            canvas = ImageDraw.Draw(image)
             broke_record = check_high_score(score)
             if broke_record:
                 print("\nNew High Score!!!")
-            DrawText(canvas, (6, -4), 11, "You", font="cambriab", color=(255, 100, 0))
-            DrawText(canvas, (5, 8), 11, "Lost", font="cambriab", color=(255, 100, 0))
-            DrawText(canvas, (0, 17), 8, "Score:", font="cambriab", color=(255, 255, 0))
-            DrawText(canvas, (26, 17), 8, str(score), font="cambriab", color=(0, 255, 0))
+            DrawText(canvas, (15, 23), 8, str(score), color=(0, 255, 0), center=True)
             matrix.SetImage(image)
-            time.sleep(2)
+            for x in range(40):
+                if broke_record:
+                    if x % 2:
+                        matrix.SetImage(gameover_image)
+                    else:
+                        matrix.SetImage(image)
+                time.sleep(0.1)
             state = "MENU"
-            HEAD = [16, 16]
-            TAIL = [16, 17]
+            head = [16, 16]
+            tail = [16, 17]
             score = 0
-            SNAKE = [copy.copy(HEAD), copy.copy(TAIL)]
+            snake = [copy.copy(head), copy.copy(tail)]
             hi_score = str(get_high_score())
-            DIRECTION = "RIGHT"
-            FOOD = spawn_food()
+            direction = "RIGHT"
+            food = spawn_food()
+            pygame.event.set_blocked(False)
  
 def main():
     try:

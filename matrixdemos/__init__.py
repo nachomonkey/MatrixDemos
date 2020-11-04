@@ -1,9 +1,9 @@
 import os
 import shutil
 
-__title__ = "MatrixDemo"
+__title__ = "MatrixDemos"
 __author__ = "NachoMonkey"
-__version__ = "0.2"
+__version__ = "0.3"
 
 # Put special data in your home directory
 DATA_PATH = "/home/" + os.getlogin() + "/.matrixdemos_data"
