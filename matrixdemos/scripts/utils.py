@@ -3,6 +3,8 @@ import os
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 from matrixdemos.scripts.get_file import get_file
 
+font_cache = {}
+
 def apply_alpha(image, background):
     try:
         if isinstance(image.getpixel((0, 0)), int):
@@ -20,6 +22,9 @@ def apply_alpha(image, background):
         return new_image
 
 def get_font(font, size):
+    name = font + str(size)
+    if name in font_cache:
+        return font_cache[name]
     if os.path.exists(font):
         path = font
     else:
@@ -30,10 +35,16 @@ def get_font(font, size):
     if not os.path.exists(path):
         print("The font file does not exist and is not built in", file=sys.stderr)
         sys.exit(2)
-    return ImageFont.truetype(path, size)
+    font = ImageFont.truetype(path, size)
+    font_cache[name] = font
+    return font
 
-def DrawText(canvas, pos, size=24, text="TEXT", color="BLUE", align="center", anchor="center", font="monospace", **kwargs):
-    canvas.text(pos, text, fill=color, font=get_font(font, size), align=align, anchor=anchor, **kwargs)
+def DrawText(canvas, pos, size=24, text="TEXT", color="BLUE", align="center", font="monospace", center=False, **kwargs):
+    font = get_font(font, size)
+    text_size = canvas.textsize(text, font)
+    if center:
+        pos = (pos[0] - text_size[0] // 2, pos[1] - text_size[1] // 2)
+    canvas.text(pos, text, fill=color, font=font, align=align, **kwargs)
 
 def new_canvas(mode="RGB", color=0):
     image = Image.new(mode, (32, 32), color)
